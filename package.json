@@ -19,7 +19,8 @@
     "angular-messages": "^1.4.7",
     "express": "^4.13.3",
     "lodash": "^3.10.1",
-    "ng-feedhenry": "^0.2.53"
+    "ng-feedhenry": "^0.2.53",
+    "fh-wfm-sync": "0.0.1"
   },
   "devDependencies": {
     "body-parser": "^1.13.3",

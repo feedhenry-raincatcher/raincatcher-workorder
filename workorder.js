@@ -4,8 +4,8 @@
 var _ = require('lodash');
 var config = require('./config');
 require('ng-feedhenry');
-
-var ngModule = angular.module('wfm.workorder', ['wfm.core.mediator', 'ngFeedHenry']);
+require('fh-wfm-sync');
+var ngModule = angular.module('wfm.workorder', ['wfm.core.mediator', 'wfm.core.sync', 'ngFeedHenry']);
 
 require('./lib');
 
@@ -39,18 +39,7 @@ var getStatusIcon = function(workorder) {
   return statusIcon;
 }
 
-function transformDataSet(syncData) {
-  var workorders = [];
-  for (var key in syncData) {
-    //putting the array of workorders in the original format again
-    var tempObj = {};
-    tempObj = syncData[key].data;
-    tempObj.finishTimestamp = new Date(tempObj.finishTimestamp);
-    workorders.push(tempObj);
-  }
-  return workorders;
-}
-ngModule.factory('workorderManager', function($q, FHCloud, mediator) {
+ngModule.factory('workorderManager', function($q, FHCloud, mediator, sync) {
   var workorderManager = {};
   var workorders;
 
@@ -71,23 +60,21 @@ ngModule.factory('workorderManager', function($q, FHCloud, mediator) {
     };
   };
 
-  //init the sync
-  $fh.sync.init(config.syncOptions);
 
   //manage the dataSet
-  $fh.sync.manage(config.datasetId, {}, {}, {}, function() {
+   sync.getSync().manage(config.datasetId, {}, {}, {}, function() {
     console.log(config.datasetId + " managed by the sync service ");
     $fh.sync.doList(config.datasetId,
     function(res) {
-      var workorders = transformDataSet(res);
+      var workorders =  sync.transformDataSet(res);
     },
     function(err) {
       console.log('Error result from list:', JSON.stringify(err));
     });
   });
 
-  //provide listeners for sync notifications
-  $fh.sync.notify(function(notification) {
+  //subscribe for sync notifications
+  mediator.subscribe("wfm:sync:"+config.datasetId, function(notification) {
     var code = notification.code
 
     if (code == "record_delta_received" && notification.message == "create") {
@@ -96,14 +83,13 @@ ngModule.factory('workorderManager', function($q, FHCloud, mediator) {
     if (code == "record_delta_received" && notification.message == "update") {
       asyncGetWorkorder(notification.uid).then( function(result) {mediator.publish('workorder:saved', result);});
     }
-
   });
 
   var asyncListWorkorders = function() {
     var d = $q.defer();
     $fh.sync.doList(config.datasetId,
     function(res) {
-      var workorders = transformDataSet(res);
+      var workorders = sync.transformDataSet(res);
       d.resolve(workorders);
     },
     function(err) {

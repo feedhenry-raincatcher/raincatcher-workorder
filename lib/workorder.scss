@@ -11,8 +11,9 @@ $warning: #FFC107; // amber 500
   .md-list-item-text{
     margin-left: 26px!important;
   }
+}
 
-  workorder-status{
+workorder-status{
     width: 30px;
       &.success md-icon{ color:   $success  }
       &.danger md-icon{  color:   $danger   }
@@ -21,7 +22,6 @@ $warning: #FFC107; // amber 500
     md-icon{
       vertical-align: top;
     }
-  }
 }
 
 // overwrites wierdo margin angular matterial adds to long text modifier.

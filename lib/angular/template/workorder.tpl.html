@@ -10,7 +10,7 @@
 
     <md-list-item class="md-2-line" >
       <md-icon>
-      <workorder-status status="status"></workorder-status>
+      <workorder-status ng-class="ctrl.getColorIcon(status)" status="status"></workorder-status>
     </md-icon>
         <div class="md-list-item-text">
            <h3>{{status || "New"}}</h3>

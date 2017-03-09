@@ -18,14 +18,7 @@
     ng-class="{active: ctrl.selected.id === workorder.id}"
     class="md-2-line workorder-item"
   >
-<!--
-  TODO: change class name according to the color:
-    "success" = green
-    danger = "red"
-    warning = "yellow"
-    no class = grey
-  -->
-  <workorder-status class="" status="ctrl.resultMap[workorder.id].status"></workorder-status>
+  <workorder-status ng-class="ctrl.getColorIcon(workorder)" status="ctrl.resultMap[workorder.id].status"></workorder-status>
 
     <div class="md-list-item-text">
       <h3>{{workorder.title}}</h3>

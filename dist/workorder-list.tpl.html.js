@@ -27,14 +27,7 @@ ngModule.run(['$templateCache', function ($templateCache) {
     '    ng-class="{active: ctrl.selected.id === workorder.id}"\n' +
     '    class="md-2-line workorder-item"\n' +
     '  >\n' +
-    '<!--\n' +
-    '  TODO: change class name according to the color:\n' +
-    '    "success" = green\n' +
-    '    danger = "red"\n' +
-    '    warning = "yellow"\n' +
-    '    no class = grey\n' +
-    '  -->\n' +
-    '  <workorder-status class="" status="ctrl.resultMap[workorder.id].status"></workorder-status>\n' +
+    '  <workorder-status ng-class="ctrl.getColorIcon(workorder)" status="ctrl.resultMap[workorder.id].status"></workorder-status>\n' +
     '\n' +
     '    <div class="md-list-item-text">\n' +
     '      <h3>{{workorder.title}}</h3>\n' +

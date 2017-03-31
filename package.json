@@ -1,6 +1,6 @@
 {
   "name": "fh-wfm-workorder",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "An workorder module for WFM",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "4.15.2",
-    "fh-wfm-mediator": "0.3.1",
+    "fh-wfm-mediator": "0.4.0-alpha.629.4",
     "lodash": "4.7.0",
     "q": "1.4.1",
     "shortid": "2.2.6"

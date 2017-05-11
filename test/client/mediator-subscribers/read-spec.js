@@ -1,7 +1,7 @@
 var mediator = require("fh-wfm-mediator/lib/mediator");
 var chai = require('chai');
 var _ = require('lodash');
-var CONSTANTS = require('../../constants');
+var CONSTANTS = require('../../../lib/constants');
 var expect = chai.expect;
 
 var MediatorTopicUtility = require('fh-wfm-mediator/lib/topics');
@@ -24,7 +24,7 @@ describe("Workorder Read Mediator Topic", function() {
   var workorderSubscribers = new MediatorTopicUtility(mediator);
   workorderSubscribers.prefix(CONSTANTS.TOPIC_PREFIX).entity(CONSTANTS.WORKORDER_ENTITY_NAME);
 
-  var readSubscribers = require('./read')(workorderSubscribers);
+  var readSubscribers = require('./../../../lib/client/mediator-subscribers/read')(workorderSubscribers);
 
   beforeEach(function() {
     this.subscribers = {};

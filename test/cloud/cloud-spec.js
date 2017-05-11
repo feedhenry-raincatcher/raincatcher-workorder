@@ -25,7 +25,7 @@ var DONE = 'done:';
  * Set of unit tests for the sync topic subscribers
  */
 describe('Workorder Sync', function() {
-  var workorderServer = require('./index.js');
+  var workorderServer = require('./../../lib/cloud/index.js');
 
   //Create
   it('should publish to done create cloud topic when the request to create a workorder has been completed', function() {

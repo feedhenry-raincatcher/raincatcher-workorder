@@ -9,7 +9,7 @@
   "scripts": {
     "build": "wfm-template-build -m 'wfm.workorder.directives'",
     "watch": "wfm-template-build -w -m 'wfm.workorder.directives'",
-    "test": "grunt test"
+    "test": "grunt",
   },
   "keywords": [
     "wfm",

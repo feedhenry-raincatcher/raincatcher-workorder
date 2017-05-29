@@ -1,4 +1,4 @@
-# FeedHenry RainCatcher workorder [![Build Status](https://travis-ci.org/feedhenry-raincatcher/raincatcher-workorder.png)](https://travis-ci.org/feedhenry-raincatcher/raincatcher-workorder)
+# FeedHenry RainCatcher workorder [![Build Status](https://travis-ci.org/feedhenry-raincatcher/raincatcher-workorder.png)](https://travis-ci.org/feedhenry-raincatcher/raincatcher-workorder) [![Coverage Status](https://coveralls.io/repos/github/feedhenry-raincatcher/raincatcher-workorder/badge.svg?branch=master)](https://coveralls.io/github/feedhenry-raincatcher/raincatcher-workorder?branch=master)
 
 This module contains a workorder model representation and its related services :
 - Backend services

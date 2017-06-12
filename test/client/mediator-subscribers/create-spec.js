@@ -2,6 +2,7 @@ var mediator = require("fh-wfm-mediator/lib/mediator");
 var chai = require('chai');
 var _ = require('lodash');
 var CONSTANTS = require('../../../lib/constants');
+var Q = require('q');
 
 var expect = chai.expect;
 
@@ -15,15 +16,9 @@ describe("Workorder Create Mediator Topic", function() {
 
   var expectedCreatedWorkorder =  _.extend({_localuid: "createdWorkorderLocalId"}, mockWorkorderToCreate);
 
-  var topicUid = 'testtopicuid1';
-
   var createTopic = "wfm:workorders:create";
-  var doneCreateTopic = "done:wfm:workorders:create:testtopicuid1";
-  var errorCreateTopic = "error:wfm:workorders:create:testtopicuid1";
 
   var syncCreateTopic = "wfm:sync:workorders:create";
-  var doneSyncCreateTopic = "done:wfm:sync:workorders:create";
-  var errorSyncCreateTopic = "error:wfm:sync:workorders:create";
 
   var workorderSubscribers = new MediatorTopicUtility(mediator);
   workorderSubscribers.prefix(CONSTANTS.TOPIC_PREFIX).entity(CONSTANTS.WORKORDER_ENTITY_NAME);
@@ -44,31 +39,20 @@ describe("Workorder Create Mediator Topic", function() {
   it('should use the sync topics to create a workorder', function() {
     this.subscribers[syncCreateTopic] = mediator.subscribe(syncCreateTopic, function(parameters) {
       expect(parameters.itemToCreate).to.deep.equal(mockWorkorderToCreate);
-      expect(parameters.topicUid).to.be.a('string');
 
-      mediator.publish(doneSyncCreateTopic + ":" + parameters.topicUid, expectedCreatedWorkorder);
+      return Q.resolve(expectedCreatedWorkorder);
     });
 
-    var donePromise = mediator.promise(doneCreateTopic);
-
-    mediator.publish(createTopic, {
-      workorderToCreate: mockWorkorderToCreate,
-      topicUid: topicUid
-    });
-
-    return donePromise.then(function(createdWorkorder) {
+    return mediator.publish(createTopic, {
+      workorderToCreate: mockWorkorderToCreate
+    }).then(function(createdWorkorder) {
       expect(createdWorkorder).to.deep.equal(expectedCreatedWorkorder);
     });
   });
 
   it('should publish an error if there is no object to update', function() {
-    var errorPromise = mediator.promise(errorCreateTopic);
-
-    mediator.publish(createTopic, {
-      topicUid: topicUid
-    });
-
-    return errorPromise.then(function(error) {
+    return mediator.publish(createTopic, {
+    }).catch(function(error) {
       expect(error.message).to.have.string("Invalid Data");
     });
   });
@@ -77,19 +61,14 @@ describe("Workorder Create Mediator Topic", function() {
     var expectedError = new Error("Error performing sync operation");
     this.subscribers[syncCreateTopic] = mediator.subscribe(syncCreateTopic, function(parameters) {
       expect(parameters.itemToCreate).to.deep.equal(mockWorkorderToCreate);
-      expect(parameters.topicUid).to.be.a('string');
 
-      mediator.publish(errorSyncCreateTopic + ":" + parameters.topicUid, expectedError);
+      return Q.reject(expectedError);
     });
 
-    var errorPromise = mediator.promise(errorCreateTopic);
 
-    mediator.publish(createTopic, {
-      workorderToCreate: mockWorkorderToCreate,
-      topicUid: topicUid
-    });
-
-    return errorPromise.then(function(error) {
+    return mediator.publish(createTopic, {
+      workorderToCreate: mockWorkorderToCreate
+    }).catch(function(error) {
       expect(error).to.deep.equal(expectedError);
     });
   });

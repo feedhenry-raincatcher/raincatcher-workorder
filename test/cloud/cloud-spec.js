@@ -3,7 +3,8 @@ var chai = require('chai');
 var expect = chai.expect;
 var app = express();
 var mockMbaasApi = {};
-var mediator = require('fh-wfm-mediator/lib/mediator.js');
+var mediator = require('fh-wfm-mediator/lib/mediator');
+var Q = require('q');
 
 var CLOUD_TOPICS = {
   create: "wfm:cloud:workorders:create",
@@ -33,12 +34,12 @@ describe('Workorder Sync', function() {
     var expectedWorkorderVal = 'test-workorder-create';
     var topicId = "testId";
 
-    workorderServer(mediator, app, mockMbaasApi);
+    workorderServer(mediator);
 
     //Mock of the data topic subscriber in the storage module
     mediator.subscribe(CLOUD_DATA_TOPICS.create, function(createdWorkorder) {
       //Publish to done create data topic to fake workorder creation by storage module
-      mediator.publish(DONE + CLOUD_DATA_TOPICS.create + ':' + createdWorkorder.id, createdWorkorder);
+      return Q.resolve(createdWorkorder);
     });
 
     return mediator.request(CLOUD_TOPICS.create, [mockWorkorderCreate, topicId], {uid: topicId}).then(function(createdWorkorder) {
@@ -65,10 +66,10 @@ describe('Workorder Sync', function() {
     //Mock of the data topic subscriber in the storage module
     mediator.subscribe(CLOUD_DATA_TOPICS.list, function() {
       //Publish to done list data topic to fake getting the list of workorders by storage module
-      mediator.publish(DONE + CLOUD_DATA_TOPICS.list, mockWorkorderArray);
+      return Q.resolve(mockWorkorderArray);
     });
 
-    mediator.request(CLOUD_TOPICS.list).then(function(listWorkorder) {
+    return mediator.request(CLOUD_TOPICS.list).then(function(listWorkorder) {
       expect(listWorkorder, 'List of workorders received should not be null or undefined').to.exist;
       expect(listWorkorder, 'List of workorders received should be an array').to.be.an('array');
       expect(listWorkorder, 'List of workorders received should have the same value as the list of workorders sent by the mock storage module').to.deep.equal(expectedWorkorderArray);
@@ -86,7 +87,7 @@ describe('Workorder Sync', function() {
     //Mock of the data topic subscriber in the storage module
     mediator.subscribe(CLOUD_DATA_TOPICS.update, function(workorderToUpdate) {
       //Publish to done update data topic to fake getting the update of workorders by storage module
-      mediator.publish(DONE + CLOUD_DATA_TOPICS.update + ':' + workorderToUpdate.id, workorderToUpdate);
+      return Q.resolve(workorderToUpdate);
     });
 
     return mediator.request(CLOUD_TOPICS.update, mockWorkorderupdate, {uid: mockWorkorderupdate.id}).then(function(updatedWorkorder) {
@@ -107,7 +108,7 @@ describe('Workorder Sync', function() {
     //Mock of the data topic subscriber in the storage module
     mediator.subscribe(CLOUD_DATA_TOPICS.read, function(uid) {
       //Publish to done read data topic to fake the reading of workorders by storage module
-      mediator.publish(DONE + CLOUD_DATA_TOPICS.read + ':' + uid, mockWorkorderRead);
+      return Q.resolve(mockWorkorderRead);
     });
 
     return mediator.request(CLOUD_TOPICS.read, uid).then(function(readWorkorder) {
@@ -128,7 +129,7 @@ describe('Workorder Sync', function() {
     //Mock of the data topic subscriber in the storage module
     mediator.subscribe(CLOUD_DATA_TOPICS.delete, function(uid) {
       //Publish to done delete data topic to fake the deleteing of workorders by storage module
-      mediator.publish(DONE + CLOUD_DATA_TOPICS.delete + ':' + uid, mockWorkorderDelete);
+      return Q.resolve(mockWorkorderDelete);
     });
 
     return mediator.request("wfm:cloud:workorders:delete", uid).then(function(deletedWorkorder) {
